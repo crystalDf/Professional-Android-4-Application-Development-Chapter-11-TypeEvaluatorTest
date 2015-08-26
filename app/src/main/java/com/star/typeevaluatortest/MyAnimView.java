@@ -3,6 +3,7 @@ package com.star.typeevaluatortest;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.TimeInterpolator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -44,6 +45,7 @@ public class MyAnimView extends View {
     protected void onDraw(Canvas canvas) {
         if (mCurrentPoint == null) {
             mCurrentPoint = new PointF(RADIUS, RADIUS);
+            drawCircle(canvas);
             startAnimation();
         } else {
             drawCircle(canvas);
@@ -77,7 +79,9 @@ public class MyAnimView extends View {
 
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.play(valueAnimator).with(objectAnimator);
+        animatorSet.setStartDelay(1000);
         animatorSet.setDuration(5000);
+        animatorSet.setInterpolator(new DecelerateAccelerateInterpolator());
         animatorSet.start();
     }
 
@@ -116,6 +120,19 @@ public class MyAnimView extends View {
                     (Color.blue(endColor) - Color.blue(startColor)));
 
             return Color.argb(alpha, red, green, blue);
+        }
+    }
+
+    private class DecelerateAccelerateInterpolator implements TimeInterpolator {
+
+        @Override
+        public float getInterpolation(float input) {
+
+            if (input < 0.5) {
+                return (float) (Math.sin(input * Math.PI) / 2);
+            } else {
+                return 1 - (float) (Math.sin(input * Math.PI) / 2);
+            }
         }
     }
 }
